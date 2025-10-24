@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Protocolo Delta — Standalone</title>
+<style>
+  html,body{height:100%;margin:0;background:#000;}
+  body{display:flex;align-items:center;justify-content:center;font-family:Inter,Segoe UI,Arial;background-image:url('public_bg.png');background-size:contain;background-position:center;background-repeat:no-repeat;background-color:#000;}
+  .overlay{width:100%;height:100%;backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;}
+  .card{width:min(1100px,92%);max-width:1100px;padding:20px;border-radius:12px;background:rgba(0,0,0,0.6);box-shadow:0 8px 40px rgba(0,0,0,0.6);color:#cfffbe}
+  .title{font-size:28px;font-weight:800;color:#dfffbf;margin-bottom:8px}
+  .subtitle{font-size:12px;color:#bfffa0;margin-bottom:12px}
+  .progress{height:12px;background:#03140b;border-radius:8px;overflow:hidden;margin-bottom:12px}
+  .bar{height:100%;background:linear-gradient(90deg,#7ffea0,#40c070);width:0%;transition:width 1s linear}
+  .list{background:rgba(0,0,0,0.45);padding:12px;border-radius:8px;max-height:360px;overflow:hidden}
+  .item{display:flex;justify-content:space-between;padding:8px 6px;border-bottom:1px solid rgba(255,255,255,0.03);opacity:0.6;}
+  .item.ok{opacity:1;color:#dfffc6}
+  .badge{display:block;margin:18px auto 0;width:300px;opacity:0;transition:opacity 1s ease, transform 0.9s ease;transform:scale(0.9)}
+  .badge.show{opacity:1;transform:scale(1)}
+  .final{text-align:center;color:#bfffa0;font-weight:800;margin-top:12px;opacity:0;transition:opacity 0.9s}
+  .final.show{opacity:1}
+</style>
+</head>
+<body>
+<div class="overlay">
+  <div class="card" id="card">
+    <div class="title">INICIANDO <span style="font-size:14px;padding:6px 10px;background:rgba(0,0,0,0.45);border-radius:8px;margin-left:10px">PROTOCOLO DELTA</span></div>
+    <div class="subtitle">POLÍCIA MILITAR DA CAPITAL — UNIDADE DELTA • PROTOCOLO DE ACOMPANHAMENTO</div>
+
+    <div class="progress"><div class="bar" id="bar"></div></div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><div style="font-size:13px">RASTREAMENTO ATIVO</div><div style="font-size:12px">VELOCIDADE &gt; 180 KM/H</div></div>
+
+    <div class="list" id="list"></div>
+
+    <img id="badge" class="badge" src="public_bg.png" alt="Unidade Delta">
+    <div id="final" class="final">PROTOCOLO DELTA ATIVO ✅</div>
+  </div>
+</div>
+
+<script>
+const pilotos = [
+"01 - Marcel Di'marolla","02 - Dean Cavalcante","03 - Denver Gucci","04 - Guilherme F",
+"05 - Lorena Lovatelli","06 - Luck Davies","07 - Marco Selinger","08 - Rodrigo Di'marolla",
+"09 - Jhony Bravo","10 - Anthony Leal","11 - Vitor Barbosa","12 - Victor Salazar",
+"13 - Bell Di'marolla","14 - Rodrigo Versone","15 - Geras Ares","16 - Luan Balakov"
+];
+
+const listEl = document.getElementById('list');
+const bar = document.getElementById('bar');
+const badge = document.getElementById('badge');
+const final = document.getElementById('final');
+
+let i = 0;
+function typeText(text, el, delay=0){
+  el.textContent = '';
+  let idx = 0;
+  function step(){
+    if(idx <= text.length){
+      el.textContent = text.slice(0, idx);
+      idx++;
+      setTimeout(step, 24 + Math.random()*40);
+    }
+  }
+  setTimeout(step, delay);
+}
+
+function showNext(){
+  if(i < pilotos.length){
+    const row = document.createElement('div');
+    row.className = 'item';
+    const left = document.createElement('div');
+    const right = document.createElement('div');
+    right.style.color = '#a8ff9a';
+    right.style.fontWeight = '700';
+    right.textContent = '';
+    left.textContent = '';
+    row.appendChild(left);
+    row.appendChild(right);
+    listEl.appendChild(row);
+    // type left
+    typeText(pilotos[i], left, 80);
+    // after typing, show OK
+    setTimeout(()=>{ right.textContent = 'OK ✅'; row.classList.add('ok'); }, 700 + pilotos[i].length*30);
+    // update progress bar
+    const pct = Math.round(((i+1)/pilotos.length)*100);
+    bar.style.width = pct + '%';
+    i++;
+    setTimeout(showNext, 800);
+  } else {
+    // finish
+    setTimeout(()=>{
+      listEl.style.opacity = '0';
+      badge.classList.add('show');
+      final.classList.add('show');
+    }, 600);
+  }
+}
+
+setTimeout(showNext, 800);
+</script>
+</body>
+</html>
